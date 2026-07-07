@@ -51,31 +51,6 @@ function setInputDevice(device) {
   for (const b of inputDeviceToggle.querySelectorAll(".unit-btn")) {
     b.classList.toggle("active", b.dataset.device === inputDevice);
   }
-  renderGear();
-}
-
-// --- Recommended gear (affiliate links go live once a program is approved) ---
-
-const gearTitle = document.getElementById("gear-title");
-const gearList = document.getElementById("gear-list");
-
-function renderGear() {
-  const deviceLabel = inputDevice === "wheel" ? "Wheel" : "Controller";
-  gearTitle.textContent = `Recommended Gear (${deviceLabel})`;
-  gearList.innerHTML = "";
-  for (const item of GEAR_RECOMMENDATIONS[inputDevice]) {
-    const el = document.createElement("a");
-    el.className = "part-item gear-item";
-    el.href = affiliateUrl(item.query);
-    el.target = "_blank";
-    el.rel = "noopener sponsored";
-    el.innerHTML = `
-      <span class="part-category">Gear</span>
-      <span class="part-name">${item.name}</span>
-      <span class="part-why">${item.blurb}</span>
-    `;
-    gearList.appendChild(el);
-  }
 }
 
 inputDeviceToggle.addEventListener("click", (e) => {
@@ -727,7 +702,6 @@ function loadState() {
 }
 
 renderGarage();
-renderGear();
 loadState();
 
 // --- PWA service worker (network-first, so updates always win) ---

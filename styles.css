@@ -530,44 +530,6 @@ button[type="submit"]:focus-visible {
   padding-left: 12px;
 }
 
-.gear-section {
-  margin-top: 28px;
-}
-
-.gear-item {
-  display: grid;
-  text-decoration: none;
-  color: inherit;
-  cursor: pointer;
-  transition: border-color 0.15s, transform 0.1s;
-}
-
-.gear-item:hover {
-  border-color: var(--magenta);
-}
-
-.gear-item:active {
-  transform: scale(0.99);
-}
-
-.gear-item:focus-visible {
-  outline: 2px solid var(--magenta);
-  outline-offset: 1px;
-}
-
-.gear-item .part-name::after {
-  content: " ↗";
-  color: var(--text-dim);
-  font-weight: 400;
-}
-
-.gear-disclosure {
-  margin: 14px 0 0;
-  font-size: 0.78rem;
-  color: var(--text-dim);
-  line-height: 1.5;
-}
-
 .garage { margin-top: 28px; }
 
 .garage-list {
