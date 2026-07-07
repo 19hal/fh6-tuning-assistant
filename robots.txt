@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://fh6-tuning-assistant.netlify.app/sitemap.xml

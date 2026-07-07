@@ -34,6 +34,14 @@ After deploying to a final domain, update the `og:image` meta tag in `index.html
 
 `gear.js` contains the Recommended Gear section. Links are plain retailer searches until `AFFILIATE_TAG` is set at the top of that file (e.g. an Amazon Associates tag) — then every link picks up the tracking parameter automatically. The FTC/Amazon disclosure line is already in the page.
 
+## Analytics
+
+Not enabled by default. To turn on free, privacy-friendly traffic stats: add this site at [Cloudflare Web Analytics](https://dash.cloudflare.com) (Analytics → Web Analytics → Add site), then in `index.html` swap in the token it gives you and uncomment the beacon `<script>` tag near the top of `<head>`.
+
+## SEO
+
+`robots.txt` and `sitemap.xml` are already in place, pointing at the Netlify domain. After deploying to a final/custom domain, update the URL in both files (and the `og:url`/`og:image` meta tags in `index.html`), then submit the site in [Google Search Console](https://search.google.com/search-console) to get it indexed.
+
 ## Data sources
 
 - Car specs (weight, power, drivetrain, front %) — community-maintained FH6 spec sheet
