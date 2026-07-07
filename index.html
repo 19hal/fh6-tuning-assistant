@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FH6 Tuning Assistant — Forza Horizon 6 Tune Calculator</title>
+<meta name="description" content="Free Forza Horizon 6 tuning calculator. Pick from 572 cars, choose circuit, drag, drift, rally, cross country or touge, and get a full tune sheet, class build plan and handling troubleshooter — tailored for controller or wheel.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FH6 Tuning Assistant">
+<meta property="og:title" content="FH6 Tuning Assistant — Forza Horizon 6 Tune Calculator">
+<meta property="og:description" content="Pick your car and use case, get a full tuning sheet, build plan and troubleshooter. Free, no sign-up, works on phone.">
+<!-- og:image should become an absolute URL (https://yourdomain/icon.png) once the site has its final address -->
+<meta property="og:image" content="icon.png">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#0b0d10">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script>
+// Apply the saved theme before first paint to avoid a flash of the wrong theme.
+try { document.documentElement.dataset.theme = localStorage.getItem("fh6-theme") || "night"; } catch (e) {}
+</script>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="title-row">
+      <span class="badge-fh6">FH6</span>
+      <h1>Tuning Assistant</h1>
+      <div class="unit-toggle theme-toggle" id="theme-toggle" role="group" aria-label="Color theme">
+        <button type="button" class="unit-btn active" data-theme-opt="night">Night</button>
+        <button type="button" class="unit-btn" data-theme-opt="daylight">Daylight</button>
+      </div>
+    </div>
+    <p class="subtitle">Pick your car, pick a use case, get a full tuning sheet and build plan.</p>
+  </header>
+
+  <form id="tune-form">
+    <div class="field combobox" id="car-combobox">
+      <label for="carsearch">Car (click to browse or type to search &mdash; auto-fills stats below)</label>
+      <input type="text" id="carsearch" placeholder="Search or browse all cars..." autocomplete="off" role="combobox" aria-expanded="false" aria-controls="car-dropdown">
+      <div class="dropdown-panel hidden" id="car-dropdown" role="listbox"></div>
+      <p class="stock-pi hidden" id="stock-pi"></p>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <label for="make">Make</label>
+        <input type="text" id="make" placeholder="e.g. Nissan" required>
+      </div>
+      <div class="field">
+        <label for="model">Model</label>
+        <input type="text" id="model" placeholder="e.g. Skyline GT-R R34" required>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <label for="weight">Weight</label>
+        <div class="unit-input">
+          <input type="number" id="weight" min="500" max="8000" step="any" placeholder="e.g. 3400" required>
+          <div class="unit-toggle" id="weight-unit-toggle" role="group" aria-label="Weight unit">
+            <button type="button" class="unit-btn active" data-unit="lbs">lbs</button>
+            <button type="button" class="unit-btn" data-unit="kg">kg</button>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="hp">Horsepower</label>
+        <input type="number" id="hp" min="50" max="2500" placeholder="e.g. 600" required>
+      </div>
+      <div class="field">
+        <label for="frontpct">Front Weight % (shown in the car's in-game stats)</label>
+        <input type="number" id="frontpct" min="20" max="80" step="1" placeholder="e.g. 53 — blank assumes 50/50">
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <label for="drivetrain">Drivetrain</label>
+        <select id="drivetrain" required>
+          <option value="RWD">RWD</option>
+          <option value="FWD">FWD</option>
+          <option value="AWD">AWD</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="usecase">Use Case</label>
+        <select id="usecase" required>
+          <option value="circuit">Circuit / Road Racing</option>
+          <option value="drag">Drag Racing</option>
+          <option value="drift">Drift</option>
+          <option value="rally">Rally / Dirt</option>
+          <option value="crosscountry">Cross Country / Off-road</option>
+          <option value="street">Street / Cruise</option>
+          <option value="touge">Touge / Mountain Pass</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <label for="piclass">Target Class (build the car up to this)</label>
+        <select id="piclass" required>
+          <option value="D">D (100-400)</option>
+          <option value="C">C (401-500)</option>
+          <option value="B">B (501-600)</option>
+          <option value="A" selected>A (601-700)</option>
+          <option value="S1">S1 (701-800)</option>
+          <option value="S2">S2 (801-900)</option>
+          <option value="R">R (901-998)</option>
+        </select>
+      </div>
+      <div class="field hidden" id="tirecompound-field">
+        <label for="tirecompound">Tire Compound</label>
+        <select id="tirecompound">
+          <option value="semislick">Semi-Slick</option>
+          <option value="slick">Race Slick</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>In-Game Units (PSI, LB/IN, IN, LB vs BAR, KGF/MM, CM, KGF)</label>
+        <div class="unit-toggle" id="unit-system-toggle" role="group" aria-label="In-game unit system">
+          <button type="button" class="unit-btn active" data-unit="imperial">Imperial</button>
+          <button type="button" class="unit-btn" data-unit="metric">Metric</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Input Device (tune is adjusted to suit)</label>
+        <div class="unit-toggle" id="input-device-toggle" role="group" aria-label="Input device">
+          <button type="button" class="unit-btn active" data-device="pad">Controller</button>
+          <button type="button" class="unit-btn" data-device="wheel">Wheel</button>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit">Generate Tune</button>
+  </form>
+
+  <section id="gear-section" class="gear-section">
+    <h2 class="parts-title" id="gear-title">Recommended Gear</h2>
+    <div id="gear-list" class="parts-list"></div>
+    <p class="gear-disclosure">As an Amazon Associate, this site may earn from qualifying purchases made through the links above, at no extra cost to you.</p>
+  </section>
+
+  <section id="results" class="results hidden">
+    <div class="results-header">
+      <h2 id="results-title"></h2>
+      <div class="results-actions">
+        <button type="button" id="copy-tune" class="copy-btn">Copy Tune</button>
+        <button type="button" id="share-tune" class="copy-btn">Share Link</button>
+        <button type="button" id="save-tune" class="copy-btn">Save Tune</button>
+      </div>
+    </div>
+    <div id="results-grid" class="results-grid"></div>
+
+    <h2 class="parts-title" id="parts-title">Build Plan</h2>
+    <p class="parts-subtitle" id="parts-subtitle"></p>
+    <div id="parts-list" class="parts-list"></div>
+
+    <h2 class="parts-title">Handling Troubleshooter</h2>
+    <p class="parts-subtitle">Drive the tune, then pick what the car is doing wrong &mdash; adjustments are listed in the order worth trying.</p>
+    <div class="field">
+      <select id="symptom">
+        <option value="">— What is the car doing? —</option>
+      </select>
+    </div>
+    <div id="symptom-fixes" class="parts-list"></div>
+
+    <p class="disclaimer">These are computed starting points based on general tuning heuristics, not exact meta numbers. Fine-tune on track and adjust to feel &mdash; especially tire pressure (watch the temp readout) and differential (watch for wheelspin/understeer).</p>
+  </section>
+
+  <section id="garage" class="garage hidden">
+    <h2 class="parts-title">Saved Tunes</h2>
+    <div id="garage-list" class="garage-list"></div>
+  </section>
+
+  <footer class="site-footer">
+    <p>Unofficial fan-made tool. Not affiliated with, endorsed by, or connected to Microsoft, Xbox, Playground Games, or Turn 10 Studios. &ldquo;Forza&rdquo; and &ldquo;Forza Horizon&rdquo; are trademarks of Microsoft Corporation. Car specs and tuning heuristics are community-sourced; all values are starting points, not guarantees.</p>
+  </footer>
+</div>
+<script src="cars.js"></script>
+<script src="tuning.js"></script>
+<script src="gear.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

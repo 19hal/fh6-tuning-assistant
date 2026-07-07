@@ -1,0 +1,13 @@
+{
+  "name": "FH6 Tuning Assistant",
+  "short_name": "FH6 Tune",
+  "description": "Tuning setups and build plans for Forza Horizon 6",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0e1116",
+  "theme_color": "#0e1116",
+  "icons": [
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
